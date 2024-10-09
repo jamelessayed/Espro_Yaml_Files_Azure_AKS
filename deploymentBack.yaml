@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-boot-deployment
+  labels:
+    app: spring-boot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-boot
+  template:
+    metadata:
+      labels:
+        app: spring-boot
+    spec:
+      containers:
+      - name: spring-boot
+        image: jamelessayed/my-spring-app:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:mysql://10.0.140.136:3306/esprooo?createDatabaseIfNotExist=true
+        - name: SPRING_DATASOURCE_USERNAME
+          value: root
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: ""
+        - name: SPRING_JPA_SHOW_SQL
+          value: "true"
+        - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+          value: update
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-boot-service
+  labels:
+    app: spring-boot
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: spring-boot
+  type: LoadBalancer
